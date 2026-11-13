@@ -6,7 +6,6 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.lab5.dto.AuthDto;
@@ -18,7 +17,6 @@ import com.example.lab5.service.UserService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/auth")
 public class AuthController {
 
     private final UserService users;
@@ -29,29 +27,29 @@ public class AuthController {
         this.auth = auth;
     }
 
-    @GetMapping("/csrf")
+    @GetMapping("/api/auth/csrf")
     public AuthDto.CsrfResponse csrf(CsrfToken token) {
         return new AuthDto.CsrfResponse(token.getHeaderName(), token.getParameterName(), token.getToken());
     }
 
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     @ResponseStatus(HttpStatus.CREATED)
     public AuthDto.TokenResponse register(@Valid @RequestBody AuthDto.RegisterRequest request) {
         return toResponse(auth.register(request.username(), request.email(), request.password(),
                 request.deviceId()));
     }
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public AuthDto.TokenResponse login(@Valid @RequestBody AuthDto.LoginRequest request) {
         return toResponse(auth.login(request.username(), request.password(), request.deviceId()));
     }
 
-    @PostMapping("/refresh")
+    @PostMapping("/auth/refresh")
     public AuthDto.TokenResponse refresh(@Valid @RequestBody AuthDto.RefreshRequest request) {
         return toResponse(auth.refresh(request.refreshToken()));
     }
 
-    @GetMapping("/me")
+    @GetMapping("/api/auth/me")
     @PreAuthorize("isAuthenticated()")
     public UserDto.Response me() {
         return UserDto.Response.of(users.findById(CurrentUser.require().getId()));

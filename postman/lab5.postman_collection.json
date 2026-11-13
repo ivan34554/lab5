@@ -144,12 +144,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/auth/register",
+              "raw": "{{baseUrl}}/auth/register",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "auth",
                 "register"
               ]
@@ -238,12 +237,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/auth/register",
+              "raw": "{{baseUrl}}/auth/register",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "auth",
                 "register"
               ]
@@ -328,12 +326,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/auth/register",
+              "raw": "{{baseUrl}}/auth/register",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "auth",
                 "register"
               ]
@@ -376,12 +373,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/auth/register",
+              "raw": "{{baseUrl}}/auth/register",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "auth",
                 "register"
               ]
@@ -427,12 +423,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/auth/register",
+              "raw": "{{baseUrl}}/auth/register",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "auth",
                 "register"
               ]
@@ -2921,12 +2916,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/auth/register",
+              "raw": "{{baseUrl}}/auth/register",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "auth",
                 "register"
               ]
@@ -2975,12 +2969,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/auth/login",
+              "raw": "{{baseUrl}}/auth/login",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "auth",
                 "login"
               ]
@@ -3067,12 +3060,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/auth/refresh",
+              "raw": "{{baseUrl}}/auth/refresh",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "auth",
                 "refresh"
               ]
@@ -3153,12 +3145,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/auth/refresh",
+              "raw": "{{baseUrl}}/auth/refresh",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "auth",
                 "refresh"
               ]
@@ -3239,12 +3230,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/auth/refresh",
+              "raw": "{{baseUrl}}/auth/refresh",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "auth",
                 "refresh"
               ]
@@ -3286,12 +3276,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/auth/refresh",
+              "raw": "{{baseUrl}}/auth/refresh",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "auth",
                 "refresh"
               ]
@@ -3332,12 +3321,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/auth/refresh",
+              "raw": "{{baseUrl}}/auth/refresh",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "auth",
                 "refresh"
               ]
@@ -3379,12 +3367,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/auth/login",
+              "raw": "{{baseUrl}}/auth/login",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "auth",
                 "login"
               ]
@@ -3425,12 +3412,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/auth/login",
+              "raw": "{{baseUrl}}/auth/login",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "auth",
                 "login"
               ]
@@ -3472,12 +3458,11 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/auth/register",
+              "raw": "{{baseUrl}}/auth/register",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
                 "auth",
                 "register"
               ]
@@ -3550,7 +3535,7 @@
           }
         }
       ],
-      "description": "Сценарий задания 5. Регистрация создаёт пользователя jwt_<время> и сразу выдаёт пару токенов. Затем: вход (в БД появляется первая запись со статусом ACTIVE и device_id = postman-login), доступ с access, обмен refresh (первая запись USED, новая ACTIVE), повторный старый refresh (401, первая запись REVOKED, новых записей нет). Проверка БД: docker compose exec db psql -U podcast_owner -d podcasts -c \"SELECT status, device_id, access_token_expiry, refresh_token_expiry FROM user_sessions WHERE username LIKE 'jwt_%' AND device_id = 'postman-login' ORDER BY refresh_token_expiry\". Остальные запросы папки проверяют отказы: подмена типа токена, поддельные токены, пустые поля, неверный пароль. Запросы /api/auth/login и /api/auth/refresh не требуют ни access-токена, ни CSRF-токена."
+      "description": "Сценарий задания 5. Регистрация создаёт пользователя jwt_<время> и сразу выдаёт пару токенов. Затем: вход (в БД появляется первая запись со статусом ACTIVE и device_id = postman-login), доступ с access, обмен refresh (первая запись USED, новая ACTIVE), повторный старый refresh (401, первая запись REVOKED, новых записей нет). Проверка БД: docker compose exec db psql -U podcast_owner -d podcasts -c \"SELECT status, device_id, access_token_expiry, refresh_token_expiry FROM user_sessions WHERE username LIKE 'jwt_%' AND device_id = 'postman-login' ORDER BY refresh_token_expiry\". Остальные запросы папки проверяют отказы: подмена типа токена, поддельные токены, пустые поля, неверный пароль. Запросы /auth/login и /auth/refresh не требуют ни access-токена, ни CSRF-токена."
     },
     {
       "name": "6. Изменение и удаление владельцем, очистка",

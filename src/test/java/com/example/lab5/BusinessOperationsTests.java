@@ -296,15 +296,15 @@ class BusinessOperationsTests {
         long unique = System.nanoTime();
         String body = "{\"username\":\"dup" + unique + "\",\"email\":\"dup" + unique
                 + "@example.com\",\"password\":\"" + PASSWORD + "\"}";
-        mvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON).content(body))
+        mvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.accessToken").isNotEmpty())
                 .andExpect(jsonPath("$.refreshToken").isNotEmpty());
         long id = users.findByUsernameIgnoreCase("dup" + unique).orElseThrow().getId();
 
-        mvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON).content(body))
+        mvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isConflict());
-        mvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\":\"\",\"email\":\"not-an-email\",\"password\":\"x\"}"))
                 .andExpect(status().isBadRequest());
         mvc.perform(patch("/api/users/" + id).contentType(MediaType.APPLICATION_JSON)

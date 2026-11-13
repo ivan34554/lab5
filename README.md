@@ -20,7 +20,7 @@ refresh-сессий в БД.
 | Генерация и проверка JWT | `JwtService`: отдельные операции для access и refresh, HS256, новый `jti` для каждой выдачи, время жизни из настроек |
 | Выдача и обновление пары | `TokenPairService`: `issue` и `refresh`, поиск, проверка статуса, изменение старой записи и сохранение новой в одной транзакции |
 | Access-фильтр | `JwtAuthenticationFilter`: принимает только access-токен в заголовке `Authorization: Bearer` |
-| Контроллер | `POST /api/auth/login` (200), `POST /api/auth/register` (201), `POST /api/auth/refresh` (200), в ответе пара токенов |
+| Контроллер | `POST /auth/login` (200), `POST /auth/register` (201), `POST /auth/refresh` (200), в ответе пара токенов |
 | Обновление refresh | старая запись `USED`, новая `ACTIVE`; повторный refresh отзывает запись (`REVOKED`) и получает `401` |
 
 Остальное (HTTP Basic, CSRF, роли, права, бизнес-операции) осталось как в Лабе 4. Далее описано то, что было в Лабе 4.
@@ -34,7 +34,7 @@ refresh-сессий в БД.
 | Получение CSRF-токена | `GET /api/auth/csrf` возвращает `{headerName, parameterName, token}` и выставляет cookie |
 | Учётные записи в БД | таблица `users` дополнена полями `password_hash`, `role`, `status`, `failed_login_attempts`, `locked_until` |
 | Безопасное хранение паролей | `PasswordEncoder` (`BCryptPasswordEncoder`), в БД хранится только хеш |
-| Регистрация | `POST /api/auth/register`: проверка надёжности пароля и уникальности логина и e-mail |
+| Регистрация | `POST /auth/register`: проверка надёжности пароля и уникальности логина и e-mail |
 | Учёт состояния пользователя | `ACTIVE` / `BLOCKED` и временная блокировка после серии неудачных входов |
 | Нет самостоятельного повышения привилегий | регистрация всегда создаёт `USER`, поля `role` и `status` из тела запроса игнорируются |
 | Роли и права | роли `USER`, `MODERATOR`, `ADMIN`, у каждой свой набор прав (authorities) |
@@ -56,7 +56,7 @@ refresh-сессий в БД.
 
 ### Регистрация и пароли
 
-`POST /api/auth/register` с телом `{"username", "email", "password"}`.
+`POST /auth/register` с телом `{"username", "email", "password"}`.
 
 - логин: 3-50 символов, буквы, цифры, `_`, `.`, `-`; логин и e-mail уникальны без учёта регистра (`409`, если заняты);
 - пароль: от 10 символов, не больше 72 байт (ограничение BCrypt), строчная и заглавная буквы, цифра, спецсимвол,
@@ -81,12 +81,14 @@ refresh-сессий в БД.
 
 | Endpoint | Тело запроса | Успешный ответ |
 |---|---|---|
-| `POST /api/auth/login` | `{"username", "password", "deviceId"?}` | `200`, пара токенов |
-| `POST /api/auth/register` | `{"username", "email", "password", "deviceId"?}` | `201`, пара токенов |
-| `POST /api/auth/refresh` | `{"refreshToken"}` | `200`, новая пара токенов |
+| `POST /auth/login` | `{"username", "password", "deviceId"?}` | `200`, пара токенов |
+| `POST /auth/register` | `{"username", "email", "password", "deviceId"?}` | `201`, пара токенов |
+| `POST /auth/refresh` | `{"refreshToken"}` | `200`, новая пара токенов |
+
+Эти три endpoint находятся по путям `/auth/...`; остальные endpoint API (`/api/auth/csrf`, `/api/auth/me`, `/api/users`, `/api/podcasts` и так далее) остались по путям из Лабы 4.
 
 Успешный ответ каждого из трёх endpoint: `{"accessToken": "<JWT>", "refreshToken": "<JWT>"}`. Access передаётся в
-заголовке `Authorization: Bearer`, refresh - в теле JSON. `/api/auth/refresh` не требует access-токена и пароля;
+заголовке `Authorization: Bearer`, refresh - в теле JSON. `/auth/refresh` не требует access-токена и пароля;
 `deviceId` (до 100 символов) - необязательная метка клиента.
 
 Ошибки (тело без новой пары токенов):
@@ -156,7 +158,7 @@ access не выполняются.
 ### CSRF и Bearer
 
 CSRF-защита из Лабы 4 включена для `POST`, `PATCH`, `DELETE`. Токен не требуется только там, где его нечем подделать:
-`POST /api/auth/login`, `POST /api/auth/refresh` (учётные данные и refresh лежат в теле запроса) и запросы с заголовком
+`POST /auth/login`, `POST /auth/refresh` (учётные данные и refresh лежат в теле запроса) и запросы с заголовком
 `Authorization: Bearer` (токен не подставляется браузером автоматически). Регистрация и запросы с HTTP Basic требуют
 CSRF-токен, как и раньше.
 
@@ -191,7 +193,7 @@ curl -b jar.txt -u 'ivan:Ivan#Pass2026' -X POST http://localhost:8080/api/episod
 
 | Операция | Кто может |
 |---|---|
-| `GET /api/auth/csrf`, `POST /api/auth/register` | все |
+| `GET /api/auth/csrf`, `POST /auth/register` | все |
 | `GET /api/auth/me` | любой вошедший |
 | `GET /api/users` | `ADMIN` |
 | `GET`, `PATCH /api/users/{id}` | сам пользователь или `ADMIN` |

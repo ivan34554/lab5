@@ -32,7 +32,7 @@ call "$MODERATOR" POST /api/podcasts/1/archive
 call "$IVAN"     POST /api/podcasts/1/restore
 
 echo; echo "### JWT: login"
-LOGIN="$(curl -s -X POST "$BASE/api/auth/login" -H 'Content-Type: application/json' \
+LOGIN="$(curl -s -X POST "$BASE/auth/login" -H 'Content-Type: application/json' \
   -d '{"username":"ivan","password":"Ivan#Pass2026","deviceId":"smoke"}')"
 echo "$LOGIN"
 ACCESS="$(echo "$LOGIN" | sed -n 's/.*"accessToken":"\([^"]*\)".*/\1/p')"
@@ -42,10 +42,10 @@ echo; echo "### JWT: GET /api/auth/me with access token"
 curl -s -H "Authorization: Bearer $ACCESS" "$BASE/api/auth/me" -w '\nHTTP %{http_code}\n'
 
 echo; echo "### JWT: refresh"
-curl -s -X POST "$BASE/api/auth/refresh" -H 'Content-Type: application/json' \
+curl -s -X POST "$BASE/auth/refresh" -H 'Content-Type: application/json' \
   -d "{\"refreshToken\":\"$REFRESH\"}" -w '\nHTTP %{http_code}\n'
 
 echo; echo "### JWT: the same refresh again (expected 401)"
-curl -s -X POST "$BASE/api/auth/refresh" -H 'Content-Type: application/json' \
+curl -s -X POST "$BASE/auth/refresh" -H 'Content-Type: application/json' \
   -d "{\"refreshToken\":\"$REFRESH\"}" -w '\nHTTP %{http_code}\n'
 

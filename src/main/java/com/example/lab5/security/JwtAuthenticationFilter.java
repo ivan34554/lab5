@@ -24,7 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String BEARER_PREFIX = "Bearer ";
     private static final Set<String> TOKEN_ENDPOINTS =
-            Set.of("/api/auth/login", "/api/auth/register", "/api/auth/refresh");
+            Set.of("/auth/login", "/auth/register", "/auth/refresh");
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;

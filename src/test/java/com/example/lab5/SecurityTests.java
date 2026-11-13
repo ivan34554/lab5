@@ -157,16 +157,16 @@ class SecurityTests {
         Cookie cookie = new Cookie("XSRF-TOKEN", token);
         String body = registerBody(TestSupport.uniqueName("csrf"), PASSWORD);
 
-        mvc.perform(MockMvcRequestBuilders.post("/api/auth/register").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(MockMvcRequestBuilders.post("/auth/register").contentType(MediaType.APPLICATION_JSON)
                 .content(body))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value("CSRF_INVALID"));
 
-        mvc.perform(MockMvcRequestBuilders.post("/api/auth/register").cookie(cookie)
+        mvc.perform(MockMvcRequestBuilders.post("/auth/register").cookie(cookie)
                 .header("X-XSRF-TOKEN", "forged-token").contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isForbidden());
 
-        mvc.perform(MockMvcRequestBuilders.post("/api/auth/register").cookie(cookie)
+        mvc.perform(MockMvcRequestBuilders.post("/auth/register").cookie(cookie)
                 .header("X-XSRF-TOKEN", token).contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isCreated());
     }
@@ -176,7 +176,7 @@ class SecurityTests {
         String username = TestSupport.uniqueName("reg");
         String body = "{\"username\":\"" + username + "\",\"email\":\"" + username
                 + "@example.com\",\"password\":\"" + PASSWORD + "\",\"role\":\"ADMIN\",\"status\":\"ACTIVE\"}";
-        mvc.perform(MockMvcRequestBuilders.post("/api/auth/register").with(csrf())
+        mvc.perform(MockMvcRequestBuilders.post("/auth/register").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.accessToken").isNotEmpty())
@@ -202,14 +202,14 @@ class SecurityTests {
         String[] weak = { "Sh0rt!a", "alllowercase123!", "ALLUPPERCASE123!", "NoDigitsHere!!", "NoSpecialChars123",
                 "Password123!", longPassword };
         for (String password : weak) {
-            mvc.perform(MockMvcRequestBuilders.post("/api/auth/register").with(csrf())
+            mvc.perform(MockMvcRequestBuilders.post("/auth/register").with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(registerBody(TestSupport.uniqueName("weak"), password)))
                     .andExpect(status().isBadRequest())
                     .andExpect(content().string(not(containsString(password))));
         }
         String username = TestSupport.uniqueName("self");
-        mvc.perform(MockMvcRequestBuilders.post("/api/auth/register").with(csrf())
+        mvc.perform(MockMvcRequestBuilders.post("/auth/register").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(registerBody(username, username + "Aa1!xyz")))
                 .andExpect(status().isBadRequest());
@@ -218,15 +218,15 @@ class SecurityTests {
     @Test
     void usernameAndEmailMustBeUnique() throws Exception {
         String username = TestSupport.uniqueName("dup");
-        mvc.perform(MockMvcRequestBuilders.post("/api/auth/register").with(csrf())
+        mvc.perform(MockMvcRequestBuilders.post("/auth/register").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content(registerBody(username, PASSWORD)))
                 .andExpect(status().isCreated());
-        mvc.perform(MockMvcRequestBuilders.post("/api/auth/register").with(csrf())
+        mvc.perform(MockMvcRequestBuilders.post("/auth/register").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content(registerBody(username.toUpperCase(), PASSWORD)))
                 .andExpect(status().isConflict());
         String sameEmail = "{\"username\":\"" + TestSupport.uniqueName("other") + "\",\"email\":\"" + username
                 + "@example.com\",\"password\":\"" + PASSWORD + "\"}";
-        mvc.perform(MockMvcRequestBuilders.post("/api/auth/register").with(csrf())
+        mvc.perform(MockMvcRequestBuilders.post("/auth/register").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content(sameEmail))
                 .andExpect(status().isConflict());
     }

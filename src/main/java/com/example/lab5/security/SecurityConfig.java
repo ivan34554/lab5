@@ -53,7 +53,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/auth/csrf").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login", "/api/auth/refresh")
+                .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/login", "/auth/refresh")
                     .permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/auth/me").authenticated()
 
@@ -97,6 +97,6 @@ public class SecurityConfig {
         }
         String path = request.getRequestURI();
         return HttpMethod.POST.matches(request.getMethod())
-                && ("/api/auth/login".equals(path) || "/api/auth/refresh".equals(path));
+                && ("/auth/login".equals(path) || "/auth/refresh".equals(path));
     }
 }

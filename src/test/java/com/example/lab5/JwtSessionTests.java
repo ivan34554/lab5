@@ -91,7 +91,7 @@ class JwtSessionTests {
     private ResultActions loginRequest(String username, String password, String deviceId) throws Exception {
         String body = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\""
                 + (deviceId == null ? "" : ",\"deviceId\":\"" + deviceId + "\"") + "}";
-        return mvc.perform(MockMvcRequestBuilders.post("/api/auth/login")
+        return mvc.perform(MockMvcRequestBuilders.post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON).content(body));
     }
 
@@ -100,7 +100,7 @@ class JwtSessionTests {
     }
 
     private ResultActions refresh(String refreshToken) throws Exception {
-        return mvc.perform(MockMvcRequestBuilders.post("/api/auth/refresh")
+        return mvc.perform(MockMvcRequestBuilders.post("/auth/refresh")
                 .contentType(MediaType.APPLICATION_JSON).content("{\"refreshToken\":\"" + refreshToken + "\"}"));
     }
 
@@ -181,7 +181,7 @@ class JwtSessionTests {
         expectRejected(loginRequest("nobody_" + System.nanoTime(), PASSWORD, null));
         loginRequest("", PASSWORD, null).andExpect(status().isBadRequest());
         loginRequest(username, "", null).andExpect(status().isBadRequest());
-        mvc.perform(MockMvcRequestBuilders.post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(MockMvcRequestBuilders.post("/auth/login").contentType(MediaType.APPLICATION_JSON)
                 .content("{}")).andExpect(status().isBadRequest());
         assertEquals(0, sessions.findAllByUsernameIgnoreCase(username).size());
     }
@@ -277,7 +277,7 @@ class JwtSessionTests {
     void refreshNeedsNeitherAccessTokenNorCsrf() throws Exception {
         String username = newUser();
         Pair pair = login(username, null);
-        mvc.perform(MockMvcRequestBuilders.post("/api/auth/refresh").header("Authorization", "Bearer expired.garbage")
+        mvc.perform(MockMvcRequestBuilders.post("/auth/refresh").header("Authorization", "Bearer expired.garbage")
                 .contentType(MediaType.APPLICATION_JSON).content("{\"refreshToken\":\"" + pair.refresh() + "\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").isNotEmpty())
@@ -286,9 +286,9 @@ class JwtSessionTests {
 
     @Test
     void refreshWithMissingOrBlankTokenIsBadRequest() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/api/auth/refresh").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(MockMvcRequestBuilders.post("/auth/refresh").contentType(MediaType.APPLICATION_JSON)
                 .content("{}")).andExpect(status().isBadRequest());
-        mvc.perform(MockMvcRequestBuilders.post("/api/auth/refresh").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(MockMvcRequestBuilders.post("/auth/refresh").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"refreshToken\":\"  \"}")).andExpect(status().isBadRequest());
     }
 
@@ -416,7 +416,7 @@ class JwtSessionTests {
         String body = "{\"username\":\"" + username + "\",\"email\":\"" + username
                 + "@example.com\",\"password\":\"" + PASSWORD + "\",\"deviceId\":\"laptop\"}";
 
-        Pair pair = pairOf(mvc.perform(MockMvcRequestBuilders.post("/api/auth/register").with(csrf())
+        Pair pair = pairOf(mvc.perform(MockMvcRequestBuilders.post("/auth/register").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isCreated()));
 
@@ -426,7 +426,7 @@ class JwtSessionTests {
         assertEquals("laptop", session.getDeviceId());
         getMe(pair.access()).andExpect(status().isOk()).andExpect(jsonPath("$.role").value("USER"));
 
-        mvc.perform(MockMvcRequestBuilders.post("/api/auth/register").with(csrf())
+        mvc.perform(MockMvcRequestBuilders.post("/auth/register").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.accessToken").doesNotExist());
@@ -441,7 +441,7 @@ class JwtSessionTests {
                 + "@example.com\",\"password\":\"" + PASSWORD + "\"}";
         doThrow(new IllegalStateException("token generation failed")).when(jwtService).createAccessToken(any(), any());
 
-        mvc.perform(MockMvcRequestBuilders.post("/api/auth/register").with(csrf())
+        mvc.perform(MockMvcRequestBuilders.post("/auth/register").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.accessToken").doesNotExist());
