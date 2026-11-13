@@ -1,0 +1,10 @@
+package com.example.lab5.security;
+
+import java.time.Duration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.DefaultValue;
+
+@ConfigurationProperties(prefix = "app.security")
+public record SecurityProperties(
+        @DefaultValue("5") int maxFailedAttempts,
+        @DefaultValue("15m") Duration lockDuration) {}
